@@ -1,0 +1,3 @@
+lishui文件夹：存放着129个ROI数据，以及临床统计数据（后缀_corr是进行修正过后的表格）
+	id_check.py：根据raw EEG data的名称，来检查并重写确定lishui的patient_info表格中的id号
+ningbo文件夹：存放着96个ROI数据，以及临床统计数据（后缀_corr是进行修正过后的表格）
