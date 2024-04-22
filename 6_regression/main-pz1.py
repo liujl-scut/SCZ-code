@@ -9,16 +9,6 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Lasso, LinearRegression, SGDRegressor, ElasticNet
 
-# from xgboost.xgb import XGBRegressor
-# from lightgbm.lgb import LGBMRegressor
-# 'LGBMRegressor',
-# 'XGBRegressor'
-# LGBMRegressor(num_leaves=31, learning_rate=0.5, n_estimators=200, n_jobs=-1),
-# XGBRegressor(max_depth=2, learning_rate=0.001, n_estimators=300, objective='reg:squarederror',
-#              n_jobs=-1)
-# {},
-# {}
-
 SCZ = 'lishui'  # ['lishui', 'ningbo']
 scale = 'panss'  # ['panss', 'rbans']
 
