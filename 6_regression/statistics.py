@@ -1,4 +1,4 @@
-from function_sta import result_statistics_1, result_statistics_2, result_statistics_3
+from sta_function import result_statistics_1, result_statistics_2, result_statistics_3
 
 path = './temp/'
 result_statistics_1(path)
