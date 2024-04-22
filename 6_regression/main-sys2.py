@@ -15,7 +15,7 @@ scale = 'rbans'  # ['panss', 'rbans']
 # ['pec', 'wpli', 'icoh']
 feature = ['wpli', ]
 # ['merge', 'all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-band = ['merge']
+band = ['DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
 cluster_merge = True  # [True, False]
 
 model_name_select = ['SVR',
