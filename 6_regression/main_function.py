@@ -142,7 +142,7 @@ def nested_cv(X, Y, model, param_grid, rep, outer_fold=10, inner_fold=10, record
             print()
 
         if record:
-            # print(y_test, y_predict)
+            print(y_test, y_predict)
             mse = mean_squared_error(y_test, y_predict)
             r, pvalue = pearsonr(y_test, y_predict)
             s_record[k + 1, 0 + rep * 6] = k
