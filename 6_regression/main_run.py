@@ -7,10 +7,10 @@ from scipy import stats
 from itertools import product
 from scipy.stats import pearsonr
 from sklearn.metrics import mean_squared_error
-from main_function import relevant_information, sturcture_dataset, nested_cv, set_record, set_record2, set_writer, check_path
+from main_function import relevant_information, sturcture_dataset, set_record, set_record2, set_writer, check_path, nested_cv
 
 
-def run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select):
+def run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, multiprocess):
     time_start = time.time()  # 记录开始时间
 
     data_merge = False  # [True, False]
@@ -26,7 +26,10 @@ def run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_selec
 
     for model_name, model, param_grid in zip(model_name_select, model_select, param_grid_select):
         print(model_name, model, param_grid)
-        result_path = './regre_result/' + SCZ + sep + scale + '_' + feature[0] + sep + model_name + sep
+        if cluster_merge:
+            result_path = './regre_result/' + SCZ + sep + scale + '_' + feature[0] + '_merge' + sep + model_name + sep
+        else:
+            result_path = './regre_result/' + SCZ + sep + scale + '_' + feature[0] + sep + model_name + sep
         check_path(result_path)
 
         for f in feature:
@@ -66,22 +69,68 @@ def run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_selec
                         record_rep = set_record2(repetition)
 
                         for rep in range(repetition):
-                            for cluster, subtype in enumerate(['s0', 's1', 's']):  # 选择subtype
-                                x, y = sturcture_dataset(data, df_info, df_cluster, lack_info_id, b, la, data_merge,
-                                                         cluster)
-                                x = stats.zscore(x, 1, ddof=1)  # 对同一被试的所有维度特征进行zscore归一化
-                                y_test, y_predict = nested_cv(x, y, model, param_grid, rep,
-                                                              outer_cv, inner_cv,
-                                                              True, record[subtype])
+                            if not multiprocess:
+                                for cluster, subtype in enumerate(['s0', 's1', 's']):  # 选择subtype
+                                    x, y = sturcture_dataset(data, df_info, df_cluster, lack_info_id, b, la, data_merge,
+                                                             cluster)
+                                    x = stats.zscore(x, 1, ddof=1)  # 对同一被试的所有维度特征进行zscore归一化
+                                    y_test, y_predict = nested_cv(x, y, model, param_grid, rep,
+                                                                  outer_cv, inner_cv,
+                                                                  True, record[subtype])
 
-                                r, p = pearsonr(y_test, y_predict)
-                                mse = mean_squared_error(y_test, y_predict)
-                                record_rep[cluster + 1, 6 * rep + 1] = mse
-                                record_rep[cluster + 1, 6 * rep + 2] = r
-                                record_rep[cluster + 1, 6 * rep + 3] = p
+                                    r, p = pearsonr(y_test, y_predict)
+                                    mse = mean_squared_error(y_test, y_predict)
+                                    record_rep[cluster + 1, 6 * rep + 1] = mse
+                                    record_rep[cluster + 1, 6 * rep + 2] = r
+                                    record_rep[cluster + 1, 6 * rep + 3] = p
 
-                                y_test_cv[subtype].extend(y_test)
-                                y_predict_cv[subtype].extend(y_predict)
+                                    y_test_cv[subtype].extend(y_test)
+                                    y_predict_cv[subtype].extend(y_predict)
+                            else:
+                                x0, y0 = sturcture_dataset(data, df_info, df_cluster, lack_info_id, b, la, data_merge,
+                                                           0)
+                                x1, y1 = sturcture_dataset(data, df_info, df_cluster, lack_info_id, b, la, data_merge,
+                                                           1)
+                                x, y = sturcture_dataset(data, df_info, df_cluster, lack_info_id, b, la, data_merge, 2)
+
+                                # 对同一被试的所有维度特征进行zscore归一化
+                                x0 = stats.zscore(x0, 1, ddof=1)
+                                x1 = stats.zscore(x1, 1, ddof=1)
+                                x = stats.zscore(x, 1, ddof=1)
+
+                                from multiprocessing import Process, Queue
+                                queue0 = Queue()
+                                queue1 = Queue()
+                                queue2 = Queue()
+                                pool1 = Process(target=nested_cv, args=(
+                                    x0, y0, model, param_grid, rep, outer_cv, inner_cv, False, record['s0'], False,
+                                    multiprocess, queue0))
+                                pool2 = Process(target=nested_cv, args=(
+                                    x1, y1, model, param_grid, rep, outer_cv, inner_cv, False, record['s1'], False,
+                                    multiprocess, queue1))
+                                pool3 = Process(target=nested_cv, args=(
+                                    x, y, model, param_grid, rep, outer_cv, inner_cv, False, record['s'], False,
+                                    multiprocess, queue2))
+                                pool1.start()
+                                pool2.start()
+                                pool3.start()
+                                pool1.join()
+                                pool2.join()
+                                pool3.join()
+                                return0 = queue0.get()
+                                return1 = queue1.get()
+                                return2 = queue2.get()
+                                y_test = [return0[0], return1[0], return2[0]]
+                                y_predict = [return0[1], return1[1], return2[1]]
+
+                                for cluster, subtype in enumerate(['s0', 's1', 's']):
+                                    r, p = pearsonr(y_test[cluster], y_predict[cluster])
+                                    mse = mean_squared_error(y_test[cluster], y_predict[cluster])
+                                    record_rep[cluster + 1, 6 * rep + 1] = mse
+                                    record_rep[cluster + 1, 6 * rep + 2] = r
+                                    record_rep[cluster + 1, 6 * rep + 3] = p
+                                    y_test_cv[subtype].extend(y_test[cluster])
+                                    y_predict_cv[subtype].extend(y_predict[cluster])
 
                         writer_record.writerows(record_rep)
                         for subtype in ['s0', 's1', 's']:

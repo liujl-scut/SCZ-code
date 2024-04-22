@@ -111,7 +111,7 @@ def sturcture_dataset(ROI, df_info, df_cluster, lack_info_id, band, label, data_
 
 
 def nested_cv(X, Y, model, param_grid, rep, outer_fold=10, inner_fold=10, record=True, s_record=None,
-              show_process=False):
+              show_process=False, multi=False, queue=None):
     inner_cv = KFold(n_splits=inner_fold, shuffle=True, random_state=100 + rep)
     outer_cv = KFold(n_splits=outer_fold, shuffle=True, random_state=200 + rep)
     outer_loop = outer_cv.split(X, Y)
@@ -152,4 +152,9 @@ def nested_cv(X, Y, model, param_grid, rep, outer_fold=10, inner_fold=10, record
             s_record[k + 1, 4 + rep * 6] = str(regr.best_estimator_)
             s_record[k + 1, 5 + rep * 6] = - regr.best_score_
 
-    return y_test_outercv, y_predict_outercv
+    if multi:
+        result = [y_test_outercv, y_predict_outercv]
+        queue.put(result)
+        return queue
+    else:
+        return y_test_outercv, y_predict_outercv
