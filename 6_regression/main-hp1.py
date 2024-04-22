@@ -52,7 +52,4 @@ param_grid_select = [{'C': [0.0001, 0.001, 0.01, 0.1]},
                      {}, ]
 
 if __name__ == '__main__':
-    run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, True)
-
-
-
+    run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, False)

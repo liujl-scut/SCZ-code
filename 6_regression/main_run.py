@@ -7,7 +7,8 @@ from scipy import stats
 from itertools import product
 from scipy.stats import pearsonr
 from sklearn.metrics import mean_squared_error
-from main_function import relevant_information, sturcture_dataset, set_record, set_record2, set_writer, check_path, nested_cv
+from main_function import relevant_information, sturcture_dataset, set_record, set_record2, set_writer, check_path, \
+    nested_cv
 
 
 def run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, multiprocess):
@@ -98,25 +99,55 @@ def run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_selec
                                 x1 = stats.zscore(x1, 1, ddof=1)
                                 x = stats.zscore(x, 1, ddof=1)
 
-                                from multiprocessing import Process, Queue
+                                from multiprocessing import Process, Queue, Pool, cpu_count
+
                                 queue0 = Queue()
                                 queue1 = Queue()
                                 queue2 = Queue()
-                                pool1 = Process(target=nested_cv, args=(
-                                    x0, y0, model, param_grid, rep, outer_cv, inner_cv, False, record['s0'], False,
-                                    multiprocess, queue0))
-                                pool2 = Process(target=nested_cv, args=(
-                                    x1, y1, model, param_grid, rep, outer_cv, inner_cv, False, record['s1'], False,
-                                    multiprocess, queue1))
-                                pool3 = Process(target=nested_cv, args=(
-                                    x, y, model, param_grid, rep, outer_cv, inner_cv, False, record['s'], False,
-                                    multiprocess, queue2))
-                                pool1.start()
-                                pool2.start()
-                                pool3.start()
-                                pool1.join()
-                                pool2.join()
-                                pool3.join()
+
+                                # cpu_num = cpu_count()
+                                # p = Pool(cpu_num)
+                                # process_names = [(x0, y0, model, param_grid, rep, outer_cv, inner_cv, False,
+                                #                   record['s0'], False),
+                                #                  (x1, y1, model, param_grid, rep, outer_cv, inner_cv, False,
+                                #                   record['s1'], False),
+                                #                  (x, y, model, param_grid, rep, outer_cv, inner_cv, False, record['s'],
+                                #                   False)]
+                                # for i in range(3):
+                                #     res = p.apply(nested_cv, args=(process_names[i]))  # apply的结果就是func的返回值,同步提交
+                                #     res = p.apply_async(nested_cv, args=(process_names[i]))  # apply_sync的结果就是异步获取func的返回值
+
+                                # process_names = [(x0, y0, model, param_grid, rep, outer_cv, inner_cv, False,
+                                #                   record['s0'], False, multiprocess, queue0),
+                                #                  (x1, y1, model, param_grid, rep, outer_cv, inner_cv, False,
+                                #                   record['s1'], False, multiprocess, queue1),
+                                #                  (x, y, model, param_grid, rep, outer_cv, inner_cv, False, record['s'],
+                                #                   False, multiprocess, queue2)]
+                                # pool = Pool(processes=cpu_num)
+                                # pool.map(nested_cv, process_names)
+                                # pool.terminate()
+                                # pool.close()  # 关闭进程池，不再接受新的进程
+                                # pool.join()  # 主进程阻塞等待子进程的退出
+
+                                # pool1 = Process(target=nested_cv, args=(
+                                #     x0, y0, model, param_grid, rep, outer_cv, inner_cv, False, record['s0'], False,
+                                #     multiprocess, queue0))
+                                # pool2 = Process(target=nested_cv, args=(
+                                #     x1, y1, model, param_grid, rep, outer_cv, inner_cv, False, record['s1'], False,
+                                #     multiprocess, queue1))
+                                # pool3 = Process(target=nested_cv, args=(
+                                #     x, y, model, param_grid, rep, outer_cv, inner_cv, False, record['s'], False,
+                                #     multiprocess, queue2))
+                                # pool1.start()
+                                # pool2.start()
+                                # pool3.start()
+                                # pool1.join()
+                                # pool2.join()
+                                # pool3.join()
+                                # pool1.terminate()
+                                # pool2.terminate()
+                                # pool3.terminate()
+
                                 return0 = queue0.get()
                                 return1 = queue1.get()
                                 return2 = queue2.get()
