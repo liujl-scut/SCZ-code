@@ -23,13 +23,13 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Lasso, LinearRegression, SGDRegressor, ElasticNet
 
 SCZ = 'lishui'  # ['lishui', 'ningbo']
-scale = 'rbans'  # ['panss', 'rbans']
+scale = 'panss'  # ['panss', 'rbans']
 
 # ['pec', 'wpli', 'icoh']
-feature = ['pec', ]
+feature = ['wpli', ]
 # ['merge', 'all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-band = ['ALPHA', 'BETA']
-cluster_merge = False  # [True, False]
+band = ['DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
+cluster_merge = True  # [True, False]
 
 model_name_select = ['RVR',]
 model_select = [RVR(kernel='linear', n_iter=10000),]
@@ -50,13 +50,9 @@ if __name__ == '__main__':
     information = SCZ + '_' + scale
 
     # lack_info_id, label, label_eng = relevant_information(information)
-    lack_info_id = [1023, 1040, 2028, 2034, 3009, 3010, 3013,
-                    1001, 1008, 1009, 1013, 1021, 1025, 2003,
-                    2006, 2012, 2013, 2017, 2039, 3007, 3008,
-                    3014, 3017, 3024, 3025, 3026, 4002, 4014,
-                    2021]
-    label = ['rbans维度3', 'rbans维度4', 'rbans维度5', 'rbans总分', '换算后']
-    label_eng = ['rbans_3', 'rbans_4', 'rbans_5', 'rbans', 'rbans_convert']
+    lack_info_id = [1023, 1040, 2028, 2034, 3009, 3010, 3013]
+    label = ['阴性分', '一般躯体症状', 'panss总分']
+    label_eng = ['Negative', 'General', 'Panss']
 
     for model_name, model, param_grid in zip(model_name_select, model_select, param_grid_select):
         print(model_name, model, param_grid)

@@ -26,14 +26,14 @@ SCZ = 'lishui'  # ['lishui', 'ningbo']
 scale = 'rbans'  # ['panss', 'rbans']
 
 # ['pec', 'wpli', 'icoh']
-feature = ['pec', ]
+feature = ['wpli', ]
 # ['merge', 'all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-band = ['ALPHA', 'BETA']
-cluster_merge = False  # [True, False]
+band = ['DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
+cluster_merge = True  # [True, False]
 
-model_name_select = ['RVR',]
-model_select = [RVR(kernel='linear', n_iter=10000),]
-param_grid_select = [{},]
+model_name_select = ['MLPRegressor',]
+model_select = [MLPRegressor(max_iter=1000),]
+param_grid_select = [{'learning_rate_init': [0.001, 0.01, 0.1, 0.2]}]
 
 if __name__ == '__main__':
     multiprocess = False
@@ -55,8 +55,8 @@ if __name__ == '__main__':
                     2006, 2012, 2013, 2017, 2039, 3007, 3008,
                     3014, 3017, 3024, 3025, 3026, 4002, 4014,
                     2021]
-    label = ['rbans维度3', 'rbans维度4', 'rbans维度5', 'rbans总分', '换算后']
-    label_eng = ['rbans_3', 'rbans_4', 'rbans_5', 'rbans', 'rbans_convert']
+    label = ['rbans维度4', 'rbans维度5', 'rbans总分', '换算后']
+    label_eng = ['rbans_4', 'rbans_5', 'rbans', 'rbans_convert']
 
     for model_name, model, param_grid in zip(model_name_select, model_select, param_grid_select):
         print(model_name, model, param_grid)
@@ -207,3 +207,5 @@ if __name__ == '__main__':
     time_end = time.time()  # 记录结束时间
     time_sum = time_end - time_start  # 计算的时间差为程序的执行时间，单位为秒/s
     print(time_sum)
+
+    

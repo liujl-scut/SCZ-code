@@ -13,43 +13,14 @@ SCZ = 'lishui'  # ['lishui', 'ningbo']
 scale = 'panss'  # ['panss', 'rbans']
 
 # ['pec', 'wpli', 'icoh']
-feature = ['pec', ]
+feature = ['wpli', ]
 # ['merge', 'all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-band = ['ALPHA', 'BETA']
+band = ['DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']  # 少一个all
 cluster_merge = False  # [True, False]
 
-model_name_select = ['SVR',
-                     'Lasso',
-                     'RVR',
-                     'LinearRegression',
-                     'KNeighborsRegressor',
-                     'DecisionTreeRegressor',
-                     'RandomForestRegressor',
-                     'MLPRegressor',
-                     'KernelRidge',
-                     'SGDRegressor',
-                     'ElasticNet', ]
-model_select = [SVR(kernel='linear'),
-                Lasso(max_iter=10000),
-                RVR(kernel='linear', n_iter=10000),
-                LinearRegression(normalize=True, n_jobs=-1),
-                KNeighborsRegressor(n_jobs=-1),
-                DecisionTreeRegressor(),
-                RandomForestRegressor(n_jobs=-1),
-                MLPRegressor(max_iter=1000),
-                KernelRidge(),
-                SGDRegressor(max_iter=10000, tol=1e-3),
-                ElasticNet(random_state=0, alpha=0.15, l1_ratio=0.9), ]
-param_grid_select = [{'C': [0.0001, 0.001, 0.01, 0.1]},
-                     {'alpha': [0.01, 0.1, 1.0, 2, 3]},
-                     {},
-                     {},
-                     {'n_neighbors': [3, 4, 5, 6, 7, 8]},
-                     {},
-                     {},
-                     {'learning_rate_init': [0.001, 0.01, 0.1, 0.2]},
-                     {'alpha': [0.001, 0.01, 0.1, 0.5, 1]},
-                     {}, ]
+model_name_select = ['RandomForestRegressor',]
+model_select = [RandomForestRegressor(n_jobs=-1)]
+param_grid_select = [{}]
 
 if __name__ == '__main__':
     run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, False)
