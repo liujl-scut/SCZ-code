@@ -28,12 +28,12 @@ scale = 'rbans'  # ['panss', 'rbans']
 # ['pec', 'wpli', 'icoh']
 feature = ['wpli', ]
 # ['merge', 'all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-band = ['all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-cluster_merge = False  # [True, False]
+band = ['DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
+cluster_merge = True  # [True, False]
 
-model_name_select = ['RVR',]
-model_select = [RVR(kernel='linear', n_iter=10000),]
-param_grid_select = [{},]
+model_name_select = ['RVR']
+model_select = [RVR(kernel='linear', n_iter=10000)]
+param_grid_select = [{}]
 
 if __name__ == '__main__':
     run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, False)

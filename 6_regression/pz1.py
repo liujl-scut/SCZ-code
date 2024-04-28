@@ -28,21 +28,12 @@ scale = 'rbans'  # ['panss', 'rbans']
 # ['pec', 'wpli', 'icoh']
 feature = ['wpli', ]
 # ['merge', 'all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-band = ['DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-cluster_merge = True  # [True, False]
+band = ['all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
+cluster_merge = False  # [True, False]
 
-model_name_select = ['MLPRegressor',
-                     'KernelRidge',
-                     'SGDRegressor',
-                     'ElasticNet',]
-model_select = [MLPRegressor(max_iter=1000),
-                KernelRidge(),
-                SGDRegressor(max_iter=10000, tol=1e-3),
-                ElasticNet(random_state=0, alpha=0.15, l1_ratio=0.9), ]
-param_grid_select = [{'learning_rate_init': [0.001, 0.01, 0.1, 0.2]},
-                     {'alpha': [0.001, 0.01, 0.1, 0.5, 1]},
-                     {},
-                     {}]
+model_name_select = ['RVR']
+model_select = [RVR(kernel='linear', n_iter=10000)]
+param_grid_select = [{}]
 
 if __name__ == '__main__':
     run(SCZ, scale, feature, band, cluster_merge, model_name_select, model_select, param_grid_select, False)
