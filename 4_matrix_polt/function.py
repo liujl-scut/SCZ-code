@@ -202,7 +202,7 @@ def plot_ttest(mat, path, name):
     plt.close()
 
 
-def convert_feature465_matrix31x31(data, df, band):
+def convert_feature465_matrix31x31(data, df, band, z_score=False):
     """
     使用聚类结果（df）的id号作为索引，使用该索引对数据data进行筛选，对筛选后的数据进行转化，
     转化方式为将465的数据特征转化为31*31的矩阵，
@@ -225,6 +225,9 @@ def convert_feature465_matrix31x31(data, df, band):
         sub_number = data['ROI'][0, 0]['sub_number']  # 存放data中所有被试者的id号
         data_band = data['ROI'][0, 0]['overall'][0, 0][band]  # 取频段为band的ROI data
         sub_cluster = df.loc[df['cluster'] == class_]['subject']  # 存放class0\class1中被试者的id号（'cluster'列）
+        if z_score:
+            data_band = stats.zscore(data_band, 1, ddof=1)
+
         index = []
         for idx in sub_cluster:  # 将class0\class1中被试者的id号，转化为data中的index
             index.append(np.argwhere(sub_number == idx)[0, 0])

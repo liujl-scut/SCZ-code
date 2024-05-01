@@ -23,8 +23,8 @@ def write_sta(filepath, filename):
         elif pd.isna(row[0]) and pd.isna(row[1]) and pd.isna(row[2]):
             csv_writer.writerow(['', '', ''])
         elif row[0] in band:
-            if (float(df.iloc[index + 2][2]) < 0.06 and float(df.iloc[index + 2][1]) > 0) or (
-                    float(df.iloc[index + 3][2]) < 0.06 and float(df.iloc[index + 3][1]) > 0):
+            if (float(df.iloc[index + 2][2]) < 0.05 and float(df.iloc[index + 2][1]) > 0) or (
+                    float(df.iloc[index + 3][2]) < 0.05 and float(df.iloc[index + 3][1]) > 0):
                 csv_writer.writerow([row[0], '', ''])
                 csv_writer.writerow([df.iloc[index + 2][0], df.iloc[index + 2][1], df.iloc[index + 2][2]])
                 csv_writer.writerow([df.iloc[index + 3][0], df.iloc[index + 3][1], df.iloc[index + 3][2]])

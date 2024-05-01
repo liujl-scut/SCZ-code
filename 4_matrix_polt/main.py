@@ -8,11 +8,12 @@ from function import concat_images, plot_matrix_31x31, plot_ttest, convert_featu
 数据转换为将维度为465的特征数据，转换为31*31的矩阵，计算出同一类下的平均矩阵。
 结果得到4张子图，分别为EC和EO两种情况的两类矩阵
 '''
-# SCZ = 'ningbo'
-SCZ = 'lishui'
-feature = ['pec', 'wpli', 'icoh']
+SCZ = 'ningbo'
+# SCZ = 'lishui'
+feature = ['pec', 'wpli']
 bandnames = ['all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
-base_path = 'D:/myTask/cluster/ROI/'
+base_path = '../ROIData/'
+label_base_path = '../cluster_result/'
 SAVE_QUALITY = 50  # 保存的图片的质量 可选0-100
 
 for f in feature:
@@ -29,10 +30,10 @@ for f in feature:
     for i, band in enumerate(bandnames):
         data_path_EC = base_path + SCZ + '/EC_' + f + '.mat'
         data_path_EO = base_path + SCZ + '/EO_' + f + '.mat'
-        cluster_path = base_path + SCZ + os.sep + f + os.sep + band + '/2/overall.csv'
-        save_path = base_path + SCZ + os.sep + f + os.sep
-        cluster_path_merge = base_path + SCZ + os.sep + f + '/merge/2/overall.csv'
-        save_path_merge = base_path + SCZ + os.sep + f + '/merge/'
+        cluster_path = label_base_path + SCZ + os.sep + f + os.sep + band + '/2/overall.csv'
+        cluster_path_merge = label_base_path + SCZ + os.sep + f + '/merge/2/overall.csv'
+        save_path = './figure/' + SCZ + os.sep + f + '/wtihout_merge/'
+        save_path_merge = './figure/' + SCZ + os.sep + f + '/wtih_merge/'
 
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -46,9 +47,9 @@ for f in feature:
 
         # ['all', 'DELTA', 'THETA', 'ALPHA', 'BETA', 'GAMMA']
         mat_EC, max_EC, min_EC, EC_fea465 = convert_feature465_matrix31x31(data_EC, df,
-                                                                           band)  # mat_EC:[(31, 31), (31, 31)]
+                                                                           band, z_score=True)  # mat_EC:[(31, 31), (31, 31)]
         mat_EO, max_EO, min_EO, EO_fea465 = convert_feature465_matrix31x31(data_EO, df,
-                                                                           band)  # mat_EO:[(31, 31), (31, 31)]
+                                                                           band, z_score=True)  # mat_EO:[(31, 31), (31, 31)]
         max_value = max_EC if max_EC > max_EO else max_EO
         min_value = min_EC if min_EC < min_EO else min_EO
         EC_tmat[i], EC_diffmat[i] = ttest(EC_fea465)
@@ -57,9 +58,9 @@ for f in feature:
 
         # merge
         mat_EC_merge, max_EC, min_EC, EC_fea465_merge = convert_feature465_matrix31x31(data_EC, df_merge,
-                                                                                       band)  # mat_EC:[(31, 31), (31, 31)]
+                                                                                       band, z_score=True)  # mat_EC:[(31, 31), (31, 31)]
         mat_EO_merge, max_EO, min_EO, EO_fea465_merge = convert_feature465_matrix31x31(data_EO, df_merge,
-                                                                                       band)  # mat_EO:[(31, 31), (31, 31)]
+                                                                                       band, z_score=True)  # mat_EO:[(31, 31), (31, 31)]
         max_value = max_EC if max_EC > max_EO else max_EO
         min_value = min_EC if min_EC < min_EO else min_EO
         EC_tmat_merge[i], EC_diffmat_merge[i] = ttest(EC_fea465_merge)
