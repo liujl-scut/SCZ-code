@@ -1,24 +1,23 @@
-import csv
 import numpy as np
 import pandas as pd
 
+lishui_path = './lishui.xlsx'
+ningbo_path = './ningbo.xlsx'
+
 # 读取xls（绝对路径）
-lishui = pd.read_excel('./regre_result/lishui.xlsx', engine='openpyxl', sheet_name=None, header=None)
-ningbo = pd.read_excel('./regre_result/ningbo.xlsx', engine='openpyxl', sheet_name=None, header=None)
+lishui = pd.read_excel(lishui_path, engine='openpyxl', sheet_name=None, header=None)
+ningbo = pd.read_excel(ningbo_path, engine='openpyxl', sheet_name=None, header=None)
 label = ['Positive', 'Negative', 'General', 'Panss']
 condition = ['EC', 'EO']
 
-filename = './regre_result/compare.csv'
-file = open(filename, 'w', encoding='utf-8', newline='')
-writer = csv.writer(file)
 
 for key in ningbo.keys():
-    writer.writerow([key, ])
+    df = pd.DataFrame(data=None, columns=[''])
     lishui_sheet = lishui[key]
     ningbo_sheet = ningbo[key]
 
     for i in range(11):
-        writer.writerow([lishui_sheet.iloc[0, i * 4 + 1], '', ''])
+        out_con = np.array([[lishui_sheet.iloc[0, i * 4 + 1], '', '', '', '', '', '', '']])
         sheet1 = lishui_sheet.iloc[:, i * 4 + 1:i * 4 + 4]
         sheet2 = ningbo_sheet.iloc[:, i * 4 + 1:i * 4 + 4]
 
@@ -61,11 +60,15 @@ for key in ningbo.keys():
                         out1 = sheet1.iloc[index1:index1 + 4, :]
                         out2 = sheet2.iloc[index2:index2 + 4, :]
 
-                        writer.writerow([label[j], ])
-                        writer.writerow([condition[k], ])
+                        out_1_2 = np.concatenate((out1.values, np.ones((4, 1)) * np.nan), axis=1)
+                        out_1_2 = np.concatenate((out_1_2, out2.values), axis=1)
+                        out_1_2 = np.insert(out_1_2, 0, values=[condition[k]] + [''] * (out_1_2.shape[1] - 1), axis=0)
+                        out_1_2 = np.insert(out_1_2, 0, values=[label[j]] + [''] * (out_1_2.shape[1] - 1), axis=0)
+                        out_1_2 = np.concatenate((out_1_2, np.ones((6, 1)) * np.nan), axis=1)
+                        out_1_2 = np.concatenate((out_1_2, np.ones((1, 8)) * np.nan), axis=0)
 
-                        for m in range(4):
-                            w = np.append(out1.values[m], '')
-                            w = np.append(w, out2.values[m])
-                            writer.writerows([w])
-                        writer.writerow(['', '', ''])
+                        out_con = np.concatenate((out_con, out_1_2), axis=0)
+
+        df = pd.concat([df, pd.DataFrame(out_con)], axis=1)
+
+    df.to_csv('./' + key + '.csv', index=False, header=False)
